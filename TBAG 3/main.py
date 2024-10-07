@@ -4,7 +4,7 @@ from item import Item
 
 small_cavern = Room("Small Cavern")
 small_cavern.set_description("You wake up dizzy and confused on a stone floor in a small cavern, not knowing where you are. "
-"You see a dead rat on the floor. As you stand to your feet, you see a message carved onto the stone wall. "
+"You see the floor is littered with dead rats. As you stand to your feet, you see a message carved onto the stone wall. "
 "It reads 'Welcome to the SkillCity dungeon, you will need all your knowledge to escape as only the wisest can survive.' "
 "The only exit is a corridor leading to a noisy sounding room.")
 
@@ -47,6 +47,7 @@ aaron = Friend("Aaron", "A handsome and intelligent, cloaked, majestic-looking m
 ballroom.set_character(aaron)
 
 devito = Enemy("Devito", "A  down on his luck troll who guards the bridge.")
+devito_dealt_with = False
 bridge_room.set_character(devito)
 
 chefbobby = Friend("Bobby The Chef", "A friendly ogre who loves cooking.")
@@ -77,11 +78,14 @@ while True:
     inhabitant = current_room.get_character()
     if inhabitant is not None:
         inhabitant.describe()
-        
+
     command = input("> ").lower()
 
     if command in ["north", "south", "east", "west"]:
-        current_room = current_room.move(command, inventory)
+        if current_room == bridge_room and command == "west" and not devito_dealt_with:
+            print("Devito is blocking your way and will not let you move past.")
+        else:
+            current_room = current_room.move(command, inventory)
 
     elif command == "talk":
         if isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Devito":
@@ -94,16 +98,16 @@ while True:
             print("There is no one here to talk to.")
 
     elif command == "offer gift":
-        if isinstance(inhabitant, Friend) and inhabitant.get_name()=="Bobby The Chef":
+        if isinstance(inhabitant, Friend) and inhabitant.get_name() == "Bobby The Chef":
             gift = input("What gift would you like to offer? ").lower()
-            inhabitant.offer_gift(gift)
-        if gift in [item.get_name().lower() for item in inventory]:
-            result = inhabitant.offer_gift(gift)
-
-        if result: 
-            inventory.remove(next(item for item in inventory if item.get_name().lower() == gift))
-            inventory.append(result)
-            print("Cheese has been added to your inventory.")
+            if gift in [item.get_name().lower() for item in inventory]:
+                result = inhabitant.offer_gift(gift)
+                if result:
+                    inventory.remove(next(item for item in inventory if item.get_name().lower() == gift))
+                    inventory.append(result)
+                    print("Cheese has been added to your inventory.")
+            else:
+                print(f"You don't have a {gift} to offer.")
         else:
             print("There is no one here to offer a gift to.")
 
@@ -114,6 +118,7 @@ while True:
             result = inhabitant.hug()
             if result:
                 print("You can now cross the bridge to the final room.")
+                devito_dealt_with = True
         else:
             print("There is no one here to hug.")
 
@@ -129,7 +134,7 @@ while True:
     elif command == "fight":
         if inhabitant is not None:
             item_to_fight_with = input("What will you fight with? ").lower()
-            print([item.get_name() for item in inventory]) 
+            print([item.get_name() for item in inventory])
             if item_to_fight_with in [item.get_name().lower() for item in inventory]:
                 result = inhabitant.fight(item_to_fight_with)
 
@@ -147,6 +152,8 @@ while True:
                     inventory.append(key)
                     print("You have received a key.")
 
+                    current_room.set_character(None)
+
                 elif not result:
                     print("You lost the fight! Now you are dead and the game is over. Not nice, is it?")
                     break
@@ -157,16 +164,20 @@ while True:
         else:
             print("There is no one to fight here.")
 
-    
-
     elif command == "bribe":
         if isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Devito":
             amount = int(input("How much will you bribe with? "))
             result = inhabitant.bribe(amount)
             if result:
                 print("You can now cross the bridge to the final room.")
+                devito_dealt_with = True
             else:
                 print("Devito did not accept your bribe.")
+        elif isinstance(inhabitant, Friend) and inhabitant.get_name() == "Aaron":
+            print(f"{inhabitant.name}: How dare you insult my integrity by suggesting I could be bribed!")
+            print(f"{inhabitant.name}: You are banished from SkillCity and will never be able to code again!")
+            print(f"{inhabitant.name}: You are forced to work at Subway for the rest of your life!")
+            exit("GAME OVER: Aaron has killed you for trying to bribe him.")
         else:
             print("There is no one here to bribe.")
 
@@ -185,6 +196,7 @@ while True:
             result = inhabitant.sleep()
             if result:
                 print("You have put Devito to sleep! You can now cross the bridge to the final room.")
+                devito_dealt_with = True
         elif isinstance(inhabitant, Enemy):
             result = inhabitant.sleep()
             if result:
@@ -196,4 +208,3 @@ while True:
 
     else:
         print("I don't understand that command. Try a better command!")
-
