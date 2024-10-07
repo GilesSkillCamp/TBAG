@@ -106,7 +106,7 @@ class Friend(Character):
     def greet(self):
         print(f"[{self.name}] says: Hello! You must be the latest student of the bootcamp. I'd love to help you, but I need to prepare tonight's dinner.")
 
-    def ask_riddle(self):
+    def ask_riddle(self, inventory):
         print(f"{self.name}: So I see you have made it this far, but we do not allow just anyone to escape the SkillCity Dungeon!")
         print(f"{self.name}: You must prove your knowledge by answering these three difficult riddles.")
         

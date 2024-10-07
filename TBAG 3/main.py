@@ -87,7 +87,7 @@ while True:
         if isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Devito":
             print(f"{inhabitant.name}: Oh god, another adventurer. Look mate, I'll be blunt. I'm skint and unloved and this is my only job, so I can't let you pass. Nothing personal.")
         elif isinstance(inhabitant, Friend) and inhabitant.get_name() == "Aaron":
-            inhabitant.ask_riddle()
+            inhabitant.ask_riddle(inventory)
         elif inhabitant is not None:
             inhabitant.talk()
         else:
