@@ -94,9 +94,16 @@ while True:
             print("There is no one here to talk to.")
 
     elif command == "offer gift":
-        if isinstance(inhabitant, Friend):
+        if isinstance(inhabitant, Friend) and inhabitant.get_name()=="Bobby The Chef":
             gift = input("What gift would you like to offer? ").lower()
             inhabitant.offer_gift(gift)
+        if gift in [item.get_name().lower() for item in inventory]:
+            result = inhabitant.offer_gift(gift)
+
+        if result: 
+            inventory.remove(next(item for item in inventory if item.get_name().lower() == gift))
+            inventory.append(result)
+            print("Cheese has been added to your inventory.")
         else:
             print("There is no one here to offer a gift to.")
 
@@ -122,6 +129,7 @@ while True:
     elif command == "fight":
         if inhabitant is not None:
             item_to_fight_with = input("What will you fight with? ").lower()
+            print([item.get_name() for item in inventory]) 
             if item_to_fight_with in [item.get_name().lower() for item in inventory]:
                 result = inhabitant.fight(item_to_fight_with)
 
@@ -148,6 +156,8 @@ while True:
                 break
         else:
             print("There is no one to fight here.")
+
+    
 
     elif command == "bribe":
         if isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Devito":
