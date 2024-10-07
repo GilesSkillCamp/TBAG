@@ -45,6 +45,7 @@ final_chamber.set_character(giant_python)
 
 aaron = Friend("Aaron", "A handsome and intelligent, cloaked, majestic-looking magical figure.")
 ballroom.set_character(aaron)
+aaron_riddles_completed = False
 
 devito = Enemy("Devito", "A  down on his luck troll who guards the bridge.")
 devito_dealt_with = False
@@ -91,7 +92,11 @@ while True:
         if isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Devito":
             print(f"{inhabitant.name}: Oh god, another adventurer. Look mate, I'll be blunt. I'm skint and unloved and this is my only job, so I can't let you pass. Nothing personal.")
         elif isinstance(inhabitant, Friend) and inhabitant.get_name() == "Aaron":
-            inhabitant.ask_riddle(inventory)
+            if aaron_riddles_completed:
+                print(f"{inhabitant.name} Mate I've given you a sword. What more do you want from me? Stop bothering me now.")
+            else:
+                inhabitant.ask_riddle(inventory)
+                aaron_riddles_completed = True
         elif inhabitant is not None:
             inhabitant.talk()
         else:
@@ -136,7 +141,11 @@ while True:
             item_to_fight_with = input("What will you fight with? ").lower()
             print([item.get_name() for item in inventory])
             if item_to_fight_with in [item.get_name().lower() for item in inventory]:
-                result = inhabitant.fight(item_to_fight_with)
+                if item_to_fight_with == "cheese" and inhabitant.get_name() == "Devito":
+                    print("That's a stupid move! Does he look lactose intolerant to you?")
+                    result = False
+                else:
+                    result = inhabitant.fight(item_to_fight_with)
 
                 if result and item_to_fight_with == "sword" and isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Giant Python":
                     print("Congratulations. You have mastered The Python and have completed the SkillCity dungeon.")
@@ -144,7 +153,7 @@ while True:
                     print("Well done!")
                     break
 
-                elif result and isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Dave":
+                if result and item_to_fight_with == "cheese" and isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Dave":
                     print("Dave's lactose intolerant body melts under the cheese and as he dies, drops a small iron key.")
                     key = Item()
                     key.set_name("key")
