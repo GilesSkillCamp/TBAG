@@ -82,18 +82,21 @@ while True:
 
     command = input("> ").lower()
 
-    if command in ["north", "south", "east", "west"]:
-        if current_room == bridge_room and command == "west" and not devito_dealt_with:
-            print("Devito is blocking your way and will not let you move past.")
-        else:
-            current_room = current_room.move(command, inventory)
+    if any(direction in command for direction in ["north", "south", "east", "west"]):
+        for direction in ["north", "south", "east", "west"]:
+            if direction in command:
+                if current_room == bridge_room and direction == "west" and not devito_dealt_with:
+                    print("Devito is blocking your way and will not let you move past.")
+                else:
+                    current_room = current_room.move(direction, inventory)
+                break
 
     elif command == "talk":
         if isinstance(inhabitant, Enemy) and inhabitant.get_name() == "Devito":
             print(f"{inhabitant.name}: Oh god, another adventurer. Look mate, I'll be blunt. I'm skint and unloved and this is my only job, so I can't let you pass. Nothing personal.")
         elif isinstance(inhabitant, Friend) and inhabitant.get_name() == "Aaron":
             if aaron_riddles_completed:
-                print(f"{inhabitant.name} Mate I've given you a sword. What more do you want from me? Stop bothering me now.")
+                print(f"{inhabitant.name}: Mate, I've given you a sword. What more do you want from me? Stop bothering me now.")
             else:
                 inhabitant.ask_riddle(inventory)
                 aaron_riddles_completed = True
@@ -217,3 +220,4 @@ while True:
 
     else:
         print("I don't understand that command. Try a better command!")
+
